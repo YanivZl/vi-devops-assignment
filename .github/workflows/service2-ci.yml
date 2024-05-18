@@ -1,4 +1,4 @@
-name: service1 CI workflow 
+name: service2 CI workflow 
 
 on:
   push:
