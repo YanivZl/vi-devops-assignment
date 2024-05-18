@@ -9,7 +9,7 @@ on:
     branches: [ "master" ]
     paths:
     - packages/service2/**
-  workflow_dispatch: true
+  workflow_dispatch:
 
 env:     
   ECR_REPOSITORY: vi-yanivzl-service2
