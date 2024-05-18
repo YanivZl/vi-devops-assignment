@@ -4,15 +4,15 @@ on:
   push:
     branches: [ "master" ]
     paths:
-    - "packages/service1/**"
+    - "packages/service2/**"
   pull_request:
     branches: [ "master" ]
-    - "packages/service1/**"
+    - "packages/service2/**"
   workflow_dispatch: true
 
 env:     
-  ECR_REPOSITORY: vi-yanivzl-service1
-  DOCKERFILE_PATH: ./packages/service1/
+  ECR_REPOSITORY: vi-yanivzl-service2
+  DOCKERFILE_PATH: ./packages/service2/
 
 permissions:
     id-token: write   # This is required for requesting the JWT
