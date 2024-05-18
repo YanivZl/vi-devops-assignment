@@ -30,6 +30,10 @@ async function connectToDatabase() {
 async function main() {
     const {counterCollection, orderCollection} = await connectToDatabase();
 
+    app.get("/liveness", async (req, res) => {
+        res.send("Service is alive");
+    });
+
     app.delete("/orders/:id", async (req, res) => {
         await orderCollection.deleteOne({_id: Number(req.params.id)});
         res.send(`Order number ${req.params.id} deleted successfully.`);
