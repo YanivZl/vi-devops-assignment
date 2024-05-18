@@ -25,7 +25,7 @@ data "aws_iam_policy_document" "oidc" {
 
     condition {
       test     = "StringLike"
-      values   = ["repo:YanivZl/vi-devops-assignment"]
+      values   = ["repo:YanivZl/vi-devops-assignment:*"]
       variable = "token.actions.githubusercontent.com:sub"
     }
   }
