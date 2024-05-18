@@ -25,7 +25,7 @@ data "aws_iam_policy_document" "oidc" {
 
     condition {
       test     = "StringLike"
-      values   = ["repo:YanivZl/*"]
+      values   = ["repo:YanivZl/vi-devops-assignment"]
       variable = "token.actions.githubusercontent.com:sub"
     }
   }
@@ -42,7 +42,7 @@ data "aws_iam_policy_document" "deploy" {
     actions = [
       "ecr:*",
     ]
-    resources = ["*"]
+    resources = [for repo in aws_ecr_repository.my_ecr_repository : repo.arn]
   }
 }
 
