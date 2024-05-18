@@ -4,10 +4,10 @@ on:
   push:
     branches: [ "master" ]
     paths:
-    - "packages/service1/**"
+    - packages/service1/**
   pull_request:
     branches: [ "master" ]
-    - "packages/service1/**"
+    - packages/service1/**
   workflow_dispatch: true
 
 env:     
