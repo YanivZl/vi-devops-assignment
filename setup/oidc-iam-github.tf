@@ -42,7 +42,7 @@ data "aws_iam_policy_document" "deploy" {
     actions = [
       "ecr:*",
     ]
-    resources = [for repo in aws_ecr_repository.my_ecr_repository : repo.arn]
+    resources = ["*"]
   }
 }
 
