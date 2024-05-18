@@ -7,6 +7,7 @@ on:
     - packages/service1/**
   pull_request:
     branches: [ "master" ]
+    paths:
     - packages/service1/**
   workflow_dispatch: true
 
