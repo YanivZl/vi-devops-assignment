@@ -35,7 +35,9 @@ jobs:
       uses: hashicorp/setup-terraform@v3
       
     - name: Terraform Init
-      run: terraform init
+      run: |
+      cd 3-eks
+      terraform init
         
     - name: Terraform validate
       run: terraform validate
