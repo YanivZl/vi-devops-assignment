@@ -56,7 +56,7 @@ spec:
           - name: MONGODB_PASSWORD
             value: "mongoadmin123"
           - name: MONGODB_HOST
-            value: "mongodb-headless.mongodb.svc.cluster.local"
+            value: "mongodb.mongodb.svc.cluster.local"
           - name: MONGODB_PORT
             value: "27017"
           - name: MONGODB_URL

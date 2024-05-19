@@ -55,12 +55,12 @@ spec:
             value: "root"
           - name: MONGODB_PASSWORD
             value: "mongoadmin123"
-          - name: MONGODB_HOST_PRIMARY
-            value: "mongodb-0.mongodb-headless.mongodb.svc.cluster.local"
+          - name: MONGODB_HOST
+            value: "mongodb.mongodb.svc.cluster.local"
           - name: MONGODB_PORT
             value: "27017"
           - name: MONGODB_URL
-            value: "mongodb://$(MONGODB_USER):$(MONGODB_PASSWORD)@$(MONGODB_HOST_PRIMARY):$(MONGODB_PORT)/?directConnection=true"
+            value: "mongodb://$(MONGODB_USER):$(MONGODB_PASSWORD)@$(MONGODB_HOST):$(MONGODB_PORT)/?directConnection=true"
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
