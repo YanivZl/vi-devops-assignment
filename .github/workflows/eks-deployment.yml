@@ -40,7 +40,11 @@ jobs:
         terraform init
         
     - name: Terraform validate
-      run: terraform validate
+      run: |
+        cd 3-eks
+        terraform validate
 
     - name: Terraform Apply
-      run: terraform apply -auto-approve
+      run: |
+        cd 3-eks
+        terraform apply -auto-approve
