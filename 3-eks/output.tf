@@ -27,3 +27,14 @@ output "eks_iam_role_arn" {
   description = "EKS IAM Role"
   value       = module.eks.cluster_iam_role_arn
 }
+
+# output "alb_ingress_url" {
+#   description = "Application Load Balancer URL"
+#   value       = "http://${kubernetes_ingress_v1.alb_ingress.status.0.load_balancer.0.ingress.0.hostname}"
+# }
+
+# output "mongodb_loadbalancer_url" {
+#   description = "URL to access mongoDB from Mongo Compass"
+#   value = 
+# }
+

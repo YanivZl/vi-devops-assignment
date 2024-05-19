@@ -1,0 +1,44 @@
+name: Deploy Terraform
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 3-eks/**
+  pull_request:
+    branches: [ "main" ]
+    paths:
+    - 3-eks/**
+  workflow_dispatch:
+
+permissions:
+    id-token: write   # This is required for requesting the JWT
+    contents: read    # This is required for actions/checkout
+
+jobs:
+  Terraform:
+    name: Terraform Plan & Apply
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout Repo
+      uses: actions/checkout@v2
+    
+    - name: configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ vars.IAM_OIDC_ROLE }}
+        role-session-name: samplerolesession
+        aws-region: ${{ vars.AWS_REGION }}
+
+    - name: Terraform Setup
+      uses: hashicorp/setup-terraform@v3
+      
+    - name: Terraform Init
+      run: terraform init
+        
+    - name: Terraform validate
+      run: terraform validate
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve

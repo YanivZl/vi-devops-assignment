@@ -40,7 +40,7 @@ data "aws_iam_policy_document" "deploy" {
   statement {
     effect  = "Allow"
     actions = [
-      "ecr:*",
+      "*",
     ]
     resources = ["*"]
   }
