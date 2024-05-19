@@ -38,7 +38,6 @@ module "eks" {
   cluster_name                             = "${var.name}-eks"
   cluster_version                          = var.eks_cluster_version
   cluster_endpoint_public_access           = true
-  enable_cluster_creator_admin_permissions = true
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
@@ -110,55 +109,60 @@ module "eks_blueprints_addons" {
   enable_aws_load_balancer_controller = true
   aws_load_balancer_controller        = {}
 
-  # ArgoCD Addon
-  enable_argocd = true
-  argocd = {
+  # Prometheus Grafana
+  enable_kube_prometheus_stack = true
+  kube_prometheus_stack = {
     set = [
       {
-        name  = "server.service.type"
-        value = "LoadBalancer"
+        name = "ingress.enabled"
+        value = true
       }
     ]
   }
 
-  # Prometheus Grafana
-  # enable_kube_prometheus_stack = true
+  # Cluster Autoscaler
+  enable_cluster_autoscaler = true
 
   helm_releases = {
-    # mongodb = {
-    #   name             = "mongodb"
-    #   repository       = "https://charts.bitnami.com/bitnami"
-    #   chart            = "mongodb"
-    #   version          = "15.4.3"
-    #   namespace        = "mongodb"
-    #   create_namespace = true
+    mongodb = {
+      name             = "mongodb"
+      repository       = "https://charts.bitnami.com/bitnami"
+      chart            = "mongodb"
+      version          = "15.4.3"
+      namespace        = "mongodb"
+      create_namespace = true
 
-    #   set = [
-    #     {
-    #       name  = "global.storageClass"
-    #       value = "gp2"
-    #     },
-    #     {
-    #       name  = "architecture"
-    #       value = "replicaset"
-    #     },
-    #     # {
-    #     #   name  = "service.type"
-    #     #   value = "LoadBalancer"
-    #     # },
-    #     # {
-    #     #   name = "auth.rootPassword"
-    #     #   value = "mongoadmin123"
-    #     # }
-    #   ]
-    # },
-    # reflactor = {
-    #   name       = "reflector"
-    #   repository = "https://emberstack.github.io/helm-charts"
-    #   chart      = "reflector"
-    #   version    = "7.1.262"
-    #   namespace  = "kube-system"
-    # }
+      set = [
+        {
+          name  = "architecture"
+          value = "replicaset"
+        },
+        {
+          name  = "global.storageClass"
+          value = "gp2"
+        },
+        {
+          name = "auth.rootPassword"
+          value = "mongoadmin123"
+        },
+        {
+          name = "externalAccess.enabled"
+          value = true
+        },
+        {
+          name = "externalAccess.autoDiscovery.enabled"
+          value = true
+        },
+        {
+          name = "rbac.create"
+          value = true
+        },
+        {
+          name = "automountServiceAccountToken"
+          value = true
+        }
+      ]
+    }
   }
 }
 
@@ -188,51 +192,51 @@ module "ebs_csi_driver_irsa" {
 # ALB Ingress resource
 ################################################################################
 
-# resource "kubernetes_ingress_v1" "alb_ingress" {
-#   metadata {
-#     name      = "alb-ingress"
-#     namespace = "default"
-#     annotations = {
-#       "alb.ingress.kubernetes.io/scheme" : "internet-facing"
-#       "alb.ingress.kubernetes.io/target-type" : "ip"
-#     }
-#   }
-#   spec {
-#     ingress_class_name = "alb"
-#     rule {
-#       host = "service1.vi-technologies.com"
-#       http {
-#         path {
-#           path      = "/"
-#           path_type = "Prefix"
-#           backend {
-#             service {
-#               name = "service1"
-#               port {
-#                 number = 3000
-#               }
-#             }
-#           }
-#         }
-#       }
-#     }
+resource "kubernetes_ingress_v1" "alb_ingress" {
+  metadata {
+    name      = "alb-ingress"
+    namespace = "default"
+    annotations = {
+      "alb.ingress.kubernetes.io/scheme" : "internet-facing"
+      "alb.ingress.kubernetes.io/target-type" : "ip"
+    }
+  }
+  spec {
+    ingress_class_name = "alb"
+    rule {
+      host = "service1.vi-technologies.com"
+      http {
+        path {
+          path      = "/"
+          path_type = "Prefix"
+          backend {
+            service {
+              name = "service1"
+              port {
+                number = 3000
+              }
+            }
+          }
+        }
+      }
+    }
 
-#     rule {
-#       host = "service2.vi-technologies.com"
-#       http {
-#         path {
-#           path      = "/"
-#           path_type = "Prefix"
-#           backend {
-#             service {
-#               name = "service2"
-#               port {
-#                 number = 3001
-#               }
-#             }
-#           }
-#         }
-#       }
-#     }
-#   }
-# }
+    rule {
+      host = "service2.vi-technologies.com"
+      http {
+        path {
+          path      = "/"
+          path_type = "Prefix"
+          backend {
+            service {
+              name = "service2"
+              port {
+                number = 3001
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
