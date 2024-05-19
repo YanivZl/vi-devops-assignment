@@ -19,6 +19,10 @@ jobs:
   Terraform:
     name: Terraform Plan & Apply
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./3-eks
+
     steps:
 
     - name: Checkout Repo
@@ -35,16 +39,10 @@ jobs:
       uses: hashicorp/setup-terraform@v3
       
     - name: Terraform Init
-      run: |
-        cd 3-eks
-        terraform init
+      run: terraform init
         
     - name: Terraform validate
-      run: |
-        cd 3-eks
-        terraform validate
+      run: terraform validate
 
     - name: Terraform Apply
-      run: |
-        cd 3-eks
-        terraform apply -auto-approve
+      run: terraform apply -auto-approve
