@@ -38,7 +38,6 @@ module "eks" {
   cluster_name                             = "${var.name}-eks"
   cluster_version                          = var.eks_cluster_version
   cluster_endpoint_public_access           = true
-  enable_cluster_creator_admin_permissions = true
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
@@ -111,16 +110,15 @@ module "eks_blueprints_addons" {
   aws_load_balancer_controller        = {}
 
   # ArgoCD Addon
-  # enable_argocd = true
-  # argocd = {
-  #   set = [
-  #     {
-  #       name  = "server.service.type"
-  #       value = "LoadBalancer"
-  #     }
-  #   ]
-  # }
-  # enable_argo_rollouts = true
+  enable_argocd = true
+  argocd = {
+    set = [
+      {
+        name  = "server.service.type"
+        value = "LoadBalancer"
+      }
+    ]
+  }
 
   # Prometheus Grafana
   # enable_kube_prometheus_stack = true

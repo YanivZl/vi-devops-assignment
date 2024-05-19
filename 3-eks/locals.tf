@@ -7,6 +7,7 @@ locals {
   }
 
   eks_auth_users = toset([
-    "arn:aws:iam::851725552187:user/yanivzlotnik1@gmail.com"
+    "arn:aws:iam::851725552187:role/vi-yanivzl-github_oidc_role",
+    "arn:aws:iam::851725552187:user/yanivzlotnik1@gmail.com",
   ])
 }
