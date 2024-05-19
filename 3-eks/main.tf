@@ -38,19 +38,36 @@ module "eks" {
   cluster_name                             = "${var.name}-eks"
   cluster_version                          = var.eks_cluster_version
   cluster_endpoint_public_access           = true
-  enable_cluster_creator_admin_permissions = true
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
+
+  access_entries = {
+    for user_arn in local.eks_auth_users : 
+    basename(user_arn) => {
+      kubernetes_group = []
+      principal_arn    = user_arn
+
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            namespaces = []
+            type       = "cluster"
+          }
+        }
+      }
+    }
+  }
 
   eks_managed_node_groups = {
     gp-managed-node-group = {
       node_group_name = var.eks_intial_node_group_name
       instance_types  = ["t3.medium"]
 
-      min_size      = var.eks_intial_node_group_min_size
-      max_size      = var.eks_intial_node_group_max_size
-      desired_size  = var.eks_intial_node_group_desired_size
+      min_size     = var.eks_intial_node_group_min_size
+      max_size     = var.eks_intial_node_group_max_size
+      desired_size = var.eks_intial_node_group_desired_size
     }
   }
 
@@ -69,8 +86,6 @@ module "eks" {
       service_account_role_arn = module.ebs_csi_driver_irsa.iam_role_arn
     }
   }
-
-
 
   tags = local.tags
 }
@@ -92,7 +107,7 @@ module "eks_blueprints_addons" {
 
   # Deploy AWS Load Balancer Controller 
   enable_aws_load_balancer_controller = true
-  aws_load_balancer_controller = {}
+  aws_load_balancer_controller        = {}
 
   # ArgoCD Addon
   # enable_argocd = true
