@@ -36,8 +36,8 @@ jobs:
       
     - name: Terraform Init
       run: |
-      cd 3-eks
-      terraform init
+        cd 3-eks
+        terraform init
         
     - name: Terraform validate
       run: terraform validate
