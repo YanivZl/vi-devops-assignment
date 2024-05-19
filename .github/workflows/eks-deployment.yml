@@ -2,11 +2,11 @@ name: Deploy Terraform
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
     paths:
       - 3-eks/**
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
     paths:
     - 3-eks/**
   workflow_dispatch:
