@@ -57,7 +57,7 @@ jobs:
       id: install
 
     - name: Configure kubectl
-      run: aws eks --region ${{ vars.AWS_REGION }} update-kubeconfig --name eks-tricentis-yanivzl
+      run: aws eks --region ${{ vars.AWS_REGION }} update-kubeconfig --name vi-yanivzl-eks
 
     - name: Helm upgrade
       working-directory: ./4-charts
