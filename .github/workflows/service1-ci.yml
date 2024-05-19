@@ -51,3 +51,23 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $DOCKERFILE_PATH
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+    
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v2.0
+      id: install
+
+    - name: Configure kubectl
+      run: aws eks --region ${{ vars.AWS_REGION }} update-kubeconfig --name eks-tricentis-yanivzl
+
+    - name: Helm upgrade
+      working-directory: ./4-charts
+      env:
+        IMAGE_TAG: ${{ github.run_id }}
+        RELEASE_NAME: service1
+        HELM_CHART_PATH: ./service1
+        RELEASE_NAMESPACE: default
+      run: |
+        helm upgrade --install $RELEASE_NAME $HELM_CHART_PATH \
+          --namespace RELEASE_NAMESPACE \
+          --set image.tag=$IMAGE_TAG \
+          --create-namespace
