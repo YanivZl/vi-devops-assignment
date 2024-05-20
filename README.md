@@ -1,4 +1,4 @@
-# Online Orders System Deployment
+# Vi Technologies Home Assignment
 
 This repository contains the infrastructure and deployment configuration for the solution of the home assigment of the interview process for DevOps role in Vi Technologies. It includes Terraform scripts for provisioning AWS resources and Helm charts for deploying the services to an EKS cluster.
 
