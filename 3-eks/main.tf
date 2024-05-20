@@ -114,7 +114,7 @@ module "eks_blueprints_addons" {
   kube_prometheus_stack = {
     set = [
       {
-        name = "ingress.enabled"
+        name = "grafana.ingress.enabled"
         value = true
       }
     ]
@@ -134,32 +134,12 @@ module "eks_blueprints_addons" {
 
       set = [
         {
-          name  = "architecture"
-          value = "replicaset"
-        },
-        {
           name  = "global.storageClass"
           value = "gp2"
         },
         {
           name = "auth.rootPassword"
           value = "mongoadmin123"
-        },
-        {
-          name = "externalAccess.enabled"
-          value = true
-        },
-        {
-          name = "externalAccess.autoDiscovery.enabled"
-          value = true
-        },
-        {
-          name = "rbac.create"
-          value = true
-        },
-        {
-          name = "automountServiceAccountToken"
-          value = true
         }
       ]
     }
