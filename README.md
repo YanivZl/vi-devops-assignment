@@ -1,58 +1,101 @@
-## DevOps Engineer Home Assignment
-Below is a home assignment for a DevOps Engineer position. You are requested to:
-1. Understand the requirements and use case. You may contact the interviewer for further clarification.
-2. Implement and run your deployment plan for backend environment using the most efficient tools.
-3. Present your deployment and result in the next interview session.
+# Online Orders System Deployment
 
-### Requirements
-You are a DevOps engineer in a project of building an online orders system. Your task is to deploy a prototype created by the development team and make it available on the public internet.
+This repository contains the infrastructure and deployment configuration for the solution of the home assigment of the interview process for DevOps role in Vi Technologies. It includes Terraform scripts for provisioning AWS resources and Helm charts for deploying the services to an EKS cluster.
 
-Below is the information given by the development team.
+## Prerequisites
 
-### Global Environment Requirement
-- Start a MongoDB instance, it should be reachable by the prototype code and the development team
+Before you start, ensure you have the following installed:
 
-### Backend Requirements
-- NodeJS LTS version
-- Set environment variable `MONGODB_URL="<mongodb connection url>"`, where `<mongodb connection url>` must match the [official mongodb node driver uri](https://docs.mongodb.com/drivers/node/current/fundamentals/connection/#connection-uri)
-- Navigate to package(s) directory `cd packages/<package>`
-- Build using npm `npm install`
-- Start using node `node index.js`
+1. **Terraform**: [Installation Guide](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+2. **AWS CLI**: [Installation Guide](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
+3. **kubectl**: [Installation Guide](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+4. **Helm**: [Installation Guide](https://helm.sh/docs/intro/install/)
+5. **Docker**: [Installation Guide](https://docs.docker.com/get-docker/)
+6. **Git**: [Installation Guide](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
-### Cloud Infrastructure Requirement
-Your deployment must meet the following criteria:
-- A working deployment which reachable through internet
-- IaC (Infrastructure as Code) deployment for the created AWS resources. You may use Cloudformation, Terraform or AWS CDK for that purpose 
-- Documentation for the deployment plan and the resources created
+You will also need AWS credentials configured on your machine. You can set this up by running `aws configure` and providing your AWS access key and secret key.
 
-### Guidebook on completing the assignment
-- Your implementation should be commited to your own public git repository, including any IaC, documentation, etc (fork this repository)
-- Create dockerfiles to match the deployment requirements
-- Create all resources using IaC tools
-- Use [Amazon Elastic Container Registry](https://us-east-1.console.aws.amazon.com/ecr/get-started) to push the images to a private repository
-- Create a [Kubernetes](https://us-east-1.console.aws.amazon.com/eks/home) cluster
-- Use helm to deploy the service(s)
-- Create a MongoDB instance and make it reachable for the deployed service, update the `MONGODB_URL` environment variable to match the mongodb connection url 
-- Expose the services to the internet using AWS Load Balancer, AWS Elastic IP, and Network Interface
-- Document the deployment steps and the resources created in the deployment as clear and detailed as possible
-- Bonus (implement or write detailed plan):
-  - Supply the deployment with CI/CD automated process to push the image to ECR and deploy it to the cluster
-  - Monitor the service and handle recovery for different resources
-  - Maintain and handle the scaling of the service
-  - Maintain and handle high availability of the service according to best practices
-  - Secure the deployments according to best practices (rate limits, relevant security groups, etc)
-  - Consider multi-tenant and multi-environment deployment 
-  - Documentation for disaster recovery plan
-  - Any other improvement that you think is relevant for this project
 
-### How will the assignment be evaluated
-When evaluating the assignment, we will consider the following:
-- The deployment plan and the resources are created and working as expected. We will trigger the API and expect a valid response
-- The documentation is clear and detailed, we will follow the documentation to understand the deployment process
-- Best practicies are followed across all functional and non-functional requirements (for example: security, cost optimization, reliability, etc)
+## Repository Structure
 
-### General Notes
-- For performing the assignment, you will be given with AWS credentials (console and programmatic) to a dedicated account, **DO NOT COMMIT THEM IN THE CODE**
-- Make sure to create small tier resources, as the prototype demands minimal working loads
-- This assignment can be implemented in more than one way, if any further permissions are required for your implementation, contact us
-- If you have any other questions, please do not hesitate to ask
+```plaintext
+.
+├── packages                 # Provided by the recruiting team, includes 2 applications
+├── 1-remote-state           # Terraform provisioning of S3 backend and DynamoDB table for state locking
+├── 2-setup                  # Terraform provisioning of ECR repository and OIDC for GitHub to AWS IAM connection
+├── 3-eks                    # Terraform provisioning of VPC, EKS, MongoDB, CAS, Prometheus & Grafana, and ALB Ingress
+├── 4-charts                 # Helm charts for deploying the services
+└── README.md                # This file
+```
+
+
+## Directory Descriptions
+
+- **packages**: Contains the NodeJS applications that need to be deployed.
+- **1-remote-state**: Terraform scripts for setting up the remote state management using S3 and DynamoDB.
+- **2-setup**: Terraform scripts for creating an ECR repository and setting up OIDC to allow GitHub Actions to interact with AWS.
+- **3-eks**: Terraform scripts for creating the VPC, EKS cluster, deploying MongoDB within the cluster, setting up Cluster Autoscaler, Prometheus & Grafana for monitoring, and ALB Ingress for exposing services.
+- **4-charts**: Helm charts for deploying the NodeJS applications in the packages directory.
+
+
+## Deployment Steps
+
+1. **Set Up Remote State**
+
+   Navigate to the `1-remote-state` directory and initialize and apply the Terraform configuration:
+
+   ```sh
+   cd 1-remote-state
+   terraform init
+   terraform apply
+   ```
+
+2. **Provision ECR and OIDC**
+
+   Navigate to the `2-setup` directory and initialize and apply the Terraform configuration:
+
+   ```sh
+   cd 2-setup
+   terraform init
+   terraform apply
+   ```
+
+3. **Create EKS Cluster and Deploy Resources**
+
+   Navigate to the `3-eks` directory and initialize and apply the Terraform configuration:
+
+   ```sh
+   cd 3-eks
+   terraform init
+   terraform apply
+   ```
+
+
+## Testing
+
+To verify the deployment, follow these steps:
+
+1. **Access the Applications**: You can access the application using the following scripts:
+
+    ```sh
+    curl -X POST "http://k8s-default-albingre-cf77fcd55d-2074889912.us-west-2.elb.amazonaws.com/orders" -H "Host: service1.vi-technologies.com"
+    
+    curl -X DELETE "http://k8s-default-albingre-cf77fcd55d-2074889912.us-west-2.elb.amazonaws.com/orders/:id" -H "Host: service1.vi-technologies.com"
+    
+    curl -X GET "http://k8s-default-albingre-cf77fcd55d-2074889912.us-west-2.elb.amazonaws.com/orders" -H "Host: service2.vi-technologies.com"
+    ```
+
+2. **Monitor the Cluster**: You can monitor the cluster using Grafana, which is exposed at the following URL (will be provided later). Use the following credentials to login: Username = admin, Password = prom-operator.
+
+
+## GitHub Actions Workflows
+
+This section describes the GitHub Actions workflows included in this repository:
+
+1. **eks-deployment.yml**: This workflow deploys the EKS cluster from the "3-eks" folder on every push or pull request.
+
+2. **service1-ci.yml**: This workflow implements CI/CD for service1. It deploys the service1 from the "packages/service1" directory on every push or pull request.
+
+3. **service2-ci.yml**: This workflow implements CI/CD for service2. It deploys the service2 from the "packages/service2" directory on every push or pull request.
+
+
